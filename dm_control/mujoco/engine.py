@@ -106,32 +106,12 @@ class Physics(_control.Physics):
   _contexts = None
 
   def __init__(self, data):
-    """Initializes a new `Physics` instance.
-
-    Args:
-      data: Instance of `wrapper.MjData`.
-    """
     self._reload_from_data(data)
 
   def set_control(self, control):
-    """Sets the control signal for the actuators.
-
-    Args:
-      control: NumPy array or array-like actuation values.
-    """
     self.data.ctrl[:] = np.asarray(control)
 
   def step(self):
-    """Advances physics with up-to-date position and velocity dependent fields.
-
-    The actuation can be updated by calling the `set_control` function first.
-    """
-    # In the case of Euler integration we assume mj_step1 has already been
-    # called for this state, finish the step with mj_step2 and then update all
-    # position and velocity related fields with mj_step1. This ensures that
-    # (most of) mjData is in sync with qpos and qvel. In the case of non-Euler
-    # integrators (e.g. RK4) an additional mj_step1 must be called after the
-    # last mj_step to ensure mjData syncing.
     if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
       mjlib.mj_step2(self.model.ptr, self.data.ptr)
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
@@ -145,26 +125,6 @@ class Physics(_control.Physics):
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
              depth=False, scene_option=None):
-    """Returns a camera view as a NumPy array of pixel values.
-
-    Args:
-      height: Viewport height (number of pixels). Optional, defaults to 240.
-      width: Viewport width (number of pixels). Optional, defaults to 320.
-      camera_id: Optional camera name or index. Defaults to -1, the free
-        camera, which is always defined. A nonnegative integer or string
-        corresponds to a fixed camera, which must be defined in the model XML.
-        If `camera_id` is a string then the camera must also be named.
-      overlays: An optional sequence of `TextOverlay` instances to draw. Only
-        supported if `depth` is False.
-      depth: If `True`, this method returns a NumPy float array of depth values
-        (in meters). Defaults to `False`, which results in an RGB image.
-      scene_option: An optional `wrapper.MjvOption` instance that can be used to
-        render the scene with custom visualization options. If None then the
-        default options will be used.
-
-    Returns:
-      The rendered RGB or depth image.
-    """
     camera = Camera(
         physics=self, height=height, width=width, camera_id=camera_id)
     image = camera.render(
@@ -173,22 +133,9 @@ class Physics(_control.Physics):
     return image
 
   def get_state(self):
-    """Returns the physics state.
-
-    Returns:
-      NumPy array containing full physics simulation state.
-    """
     return np.concatenate(self._physics_state_items())
 
   def set_state(self, physics_state):
-    """Sets the physics state.
-
-    Args:
-      physics_state: NumPy array containing the full physics simulation state.
-
-    Raises:
-      ValueError: If `physics_state` has invalid size.
-    """
     state_items = self._physics_state_items()
 
     expected_shape = (sum(item.size for item in state_items),)
@@ -203,15 +150,6 @@ class Physics(_control.Physics):
       start += size
 
   def copy(self, share_model=False):
-    """Creates a copy of this `Physics` instance.
-
-    Args:
-      share_model: If True, the copy and the original will share a common
-        MjModel instance. By default, both model and data will both be copied.
-
-    Returns:
-      A `Physics` instance.
-    """
     if not share_model:
       new_model = self.model.copy()
     else:
@@ -264,29 +202,10 @@ class Physics(_control.Physics):
     self._reload_from_data(data)
 
   def _reload_from_model(self, model):
-    """Initializes a new or existing `Physics` from a `wrapper.MjModel`.
-
-    Creates a new `wrapper.MjData` instance, then delegates to
-    `_reload_from_data`.
-
-    Args:
-      model: Instance of `wrapper.MjModel`.
-    """
     data = wrapper.MjData(model)
     self._reload_from_data(data)
 
   def _reload_from_data(self, data):
-    """Initializes a new or existing `Physics` instance from a `wrapper.MjData`.
-
-    Assigns all attributes, sets up named indexing, and creates rendering
-    contexts if rendering is enabled.
-
-    The default constructor as well as the other `reload_from` methods should
-    delegate to this method.
-
-    Args:
-      data: Instance of `wrapper.MjData`.
-    """
     self._data = data
 
     if not render.DISABLED:
@@ -302,97 +221,39 @@ class Physics(_control.Physics):
         data=index.struct_indexer(self.data, 'mjdata', axis_indexers),)
 
   def free(self):
-    """Frees the native MuJoCo data structures held by this `Physics` instance.
-
-    This is an advanced feature for use when manual memory management is
-    necessary. This `Physics` object MUST NOT be used after this function has
-    been called.
-    """
     self.data.free()
     self.model.free()
 
   @classmethod
   def from_model(cls, model):
-    """A named constructor from a `wrapper.MjModel` instance."""
     data = wrapper.MjData(model)
     return cls(data)
 
   @classmethod
   def from_xml_string(cls, xml_string, assets=None):
-    """A named constructor from a string containing an MJCF XML file.
-
-    Args:
-      xml_string: XML string containing an MJCF model description.
-      assets: Optional dict containing external assets referenced by the model
-        (such as additional XML files, textures, meshes etc.), in the form of
-        `{filename: contents_string}` pairs. The keys should correspond to the
-        filenames specified in the model XML.
-
-    Returns:
-      A new `Physics` instance.
-    """
     model = wrapper.MjModel.from_xml_string(xml_string, assets=assets)
     return cls.from_model(model)
 
   @classmethod
   def from_byte_string(cls, byte_string):
-    """A named constructor from a model binary as a byte string."""
     model = wrapper.MjModel.from_byte_string(byte_string)
     return cls.from_model(model)
 
   @classmethod
   def from_xml_path(cls, file_path):
-    """A named constructor from a path to an MJCF XML file.
-
-    Args:
-      file_path: String containing path to model definition file.
-
-    Returns:
-      A new `Physics` instance.
-    """
     model = wrapper.MjModel.from_xml_path(file_path)
     return cls.from_model(model)
 
   @classmethod
   def from_binary_path(cls, file_path):
-    """A named constructor from a path to an MJB model binary file.
-
-    Args:
-      file_path: String containing path to model definition file.
-
-    Returns:
-      A new `Physics` instance.
-    """
     model = wrapper.MjModel.from_binary_path(file_path)
     return cls.from_model(model)
 
   def reload_from_xml_string(self, xml_string, assets=None):
-    """Reloads the `Physics` instance from a string containing an MJCF XML file.
-
-    After calling this method, the state of the `Physics` instance is the same
-    as a new `Physics` instance created with the `from_xml_string` named
-    constructor.
-
-    Args:
-      xml_string: XML string containing an MJCF model description.
-      assets: Optional dict containing external assets referenced by the model
-        (such as additional XML files, textures, meshes etc.), in the form of
-        `{filename: contents_string}` pairs. The keys should correspond to the
-        filenames specified in the model XML.
-    """
     new_model = wrapper.MjModel.from_xml_string(xml_string, assets=assets)
     self._reload_from_model(new_model)
 
   def reload_from_xml_path(self, file_path):
-    """Reloads the `Physics` instance from a path to an MJCF XML file.
-
-    After calling this method, the state of the `Physics` instance is the same
-    as a new `Physics` instance created with the `from_xml_path`
-    named constructor.
-
-    Args:
-      file_path: String containing path to model definition file.
-    """
     self._reload_from_model(wrapper.MjModel.from_xml_path(file_path))
 
   @property
