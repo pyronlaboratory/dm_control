@@ -112,6 +112,11 @@ class Physics(_control.Physics):
     self.data.ctrl[:] = np.asarray(control)
 
   def step(self):
+    """
+    Updates the simulation by calling the `mj_step` or `mj_step1` functions depending
+    on the integrator option, and then checking for invalid states.
+
+    """
     if self.model.opt.integrator == enums.mjtIntegrator.mjINT_EULER:
       mjlib.mj_step2(self.model.ptr, self.data.ptr)
       mjlib.mj_step1(self.model.ptr, self.data.ptr)
@@ -125,6 +130,24 @@ class Physics(_control.Physics):
 
   def render(self, height=240, width=320, camera_id=-1, overlays=(),
              depth=False, scene_option=None):
+    """
+    Creates a new Camera instance, sets its height and width, and renders an image
+    using the Physics scene. The rendered image is then returned.
+
+    Args:
+        height (int): 240 by default, which sets the height of the output image.
+        width (int): 320 by default, representing the width of the rendered image.
+        camera_id (int): Used to specify the id of the camera to be used for rendering.
+        overlays (Union[str, List[float]]): Used to specify additional render
+            layers or images to be composited with the scene.
+        depth (bool): Used to toggle the rendering of depth information in the image.
+        scene_option (SceneOption | NoneType): Used to specify additional scene
+            options for rendering, such as lighting or shadows.
+
+    Returns:
+        image: A renderized view of a 3D scene.
+
+    """
     camera = Camera(
         physics=self, height=height, width=width, camera_id=camera_id)
     image = camera.render(
@@ -136,6 +159,16 @@ class Physics(_control.Physics):
     return np.concatenate(self._physics_state_items())
 
   def set_state(self, physics_state):
+    """
+    Validates the input physics state's shape against the expected shape and then
+    sets each item in the state to the corresponding value in the input state,
+    starting from a specified index.
+
+    Args:
+        physics_state (Tuple[int]): Expected to have the same shape as the state
+            items contained in the `_physics_state_items' method.
+
+    """
     state_items = self._physics_state_items()
 
     expected_shape = (sum(item.size for item in state_items),)
@@ -150,6 +183,20 @@ class Physics(_control.Physics):
       start += size
 
   def copy(self, share_model=False):
+    """
+    Creates a copy of the original model, either by shallow or deep copying depending
+    on the share_model argument. The new object is then reloaded with data from
+    the copied model.
+
+    Args:
+        share_model (bool): Used to determine whether or not the model should be
+            shared between the original instance and the copy.
+
+    Returns:
+        Object: A newly created instance of the same class as the original object,
+        with the same data as the original object.
+
+    """
     if not share_model:
       new_model = self.model.copy()
     else:
@@ -202,10 +249,20 @@ class Physics(_control.Physics):
     self._reload_from_data(data)
 
   def _reload_from_model(self, model):
+    """
+    Reloads data from a model into the object's internal state, using the `MjData`
+    wrapper to handle the data manipulation.
+
+    """
     data = wrapper.MjData(model)
     self._reload_from_data(data)
 
   def _reload_from_data(self, data):
+    """
+    Updates its data and rendering contexts based on the provided data, and then
+    performs additional actions after resetting its internal state.
+
+    """
     self._data = data
 
     if not render.DISABLED:
@@ -221,35 +278,112 @@ class Physics(_control.Physics):
         data=index.struct_indexer(self.data, 'mjdata', axis_indexers),)
 
   def free(self):
+    """
+    Frees any stored data and model resources, allowing for further manipulation
+    or reuse.
+
+    """
     self.data.free()
     self.model.free()
 
   @classmethod
   def from_model(cls, model):
+    """
+    Converts a given model into an instance of the MjData class, returning a new
+    instance of the Physics class with the transformed data.
+
+    Args:
+        model (object): Passed the model data to be wrapped into a pandas DataFrame.
+
+    Returns:
+        ClassMethod[MjData,MjModel]: A wrapper class that contains data from an
+        instance of a model class.
+
+    """
     data = wrapper.MjData(model)
     return cls(data)
 
   @classmethod
   def from_xml_string(cls, xml_string, assets=None):
+    """
+    Converts an XML string into a `MjModel` object, which can then be converted
+    into a `Physics` instance using the `from_model` method.
+
+    Args:
+        xml_string (str | bytes): A string representation of an XML document.
+        assets (Union[dict, List[Any]]): Used to pass additional asset data along
+            with the XML string for the model's assets.
+
+    Returns:
+        Model: Then converted to a value of type `cls` using the `from_model` method.
+
+    """
     model = wrapper.MjModel.from_xml_string(xml_string, assets=assets)
     return cls.from_model(model)
 
   @classmethod
   def from_byte_string(cls, byte_string):
+    """
+    Converts a byte string representing an MJ model into a Python object of the
+    Physics class, which can be used for further manipulation or analysis.
+
+    Args:
+        byte_string (bytes): Used to represent a binary representation of a model.
+
+    Returns:
+        Model: A wrapper around a model instance generated from a byte string.
+
+    """
     model = wrapper.MjModel.from_byte_string(byte_string)
     return cls.from_model(model)
 
   @classmethod
   def from_xml_path(cls, file_path):
+    """
+    Converts an XML file path into a Python instance of the MjModel class, and
+    then creates a new instance of the Physics class from that model.
+
+    Args:
+        file_path (str): The path to an XML file containing the model's configuration
+            data.
+
+    Returns:
+        Model: Obtained from a file path using the `MjModel.from_xml_path()` method,
+        and then passed through the `cls.from_model()` method to create an instance
+        of the wrapper class `wrapper.MjModel`.
+
+    """
     model = wrapper.MjModel.from_xml_path(file_path)
     return cls.from_model(model)
 
   @classmethod
   def from_binary_path(cls, file_path):
+    """
+    Converts a file path into an instance of the MjModel class, which can then be
+    used to create an instance of the Physics class.
+
+    Args:
+        file_path (str): Used to specify the path to a binary file containing a
+            trained machine learning model.
+
+    Returns:
+        Model: A subclass of MjModel.
+
+    """
     model = wrapper.MjModel.from_binary_path(file_path)
     return cls.from_model(model)
 
   def reload_from_xml_string(self, xml_string, assets=None):
+    """
+    Reloads model data from an XML string and updates the object's state accordingly.
+
+    Args:
+        xml_string (str): An XML string representation of a model to be reloaded.
+        assets (Union[Dict[str, Any], List[Any]]): Optional, used to provide
+            additional data that can be used when loading the model from the XML
+            string.
+
+    """
     new_model = wrapper.MjModel.from_xml_string(xml_string, assets=assets)
     self._reload_from_model(new_model)
 
@@ -258,6 +392,14 @@ class Physics(_control.Physics):
 
   @property
   def named(self):
+    """
+    Sets the `_named` attribute to the instance itself, effectively returning the
+    instance.
+
+    Returns:
+        object: A reference to its underlying attribute.
+
+    """
     return self._named
 
   def _make_rendering_contexts(self):
@@ -285,10 +427,26 @@ class Physics(_control.Physics):
 
   @property
   def model(self):
+    """
+    Returns the model attribute of the instance, which stores the data required
+    for physics simulations.
+
+    Returns:
+        Model: A reference to the model associated with the instance of the class.
+
+    """
     return self._data.model
 
   @property
   def data(self):
+    """
+    Returns a reference to the internal data storage of the object, allowing direct
+    access and manipulation of the data without affecting the object's state.
+
+    Returns:
+        object: A reference to the instance variable `_data`.
+
+    """
     return self._data
 
   def _physics_state_items(self):
