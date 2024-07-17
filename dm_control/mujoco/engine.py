@@ -112,6 +112,20 @@ class Physics(_control.Physics):
   _contexts = None
 
   def __new__(cls, *args, **kwargs):
+    """
+    Creates an instance of the class and initializes a lock for managing contexts
+    in parallel threads.
+
+    Args:
+        *args (list): List of positional arguments
+        **kwargs (dict): Dictionary of keyword arguments
+
+    Returns:
+        Object: An instance of the `Physics` class with a number of pre-defined
+        attributes and methods, including a lock object for synchronizing access
+        to contexts.
+
+    """
     obj = super(Physics, cls).__new__(cls)
     # The lock is created in `__new__` rather than `__init__` because there are
     # a number of existing subclasses that override `__init__` without calling
@@ -339,6 +353,13 @@ class Physics(_control.Physics):
   def __setstate__(self, data):
     # Note: `_contexts_lock` is normally created in `__new__`, but `__new__` is
     #       not invoked during unpickling.
+    """
+    Sets internal lock and reload data from given data when invoking.
+
+    Args:
+        data (any): Used to store the state of an object during serialization.
+
+    """
     self._contexts_lock = threading.Lock()
     self._reload_from_data(data)
 
@@ -491,6 +512,14 @@ class Physics(_control.Physics):
 
   @property
   def named(self):
+    """
+    Retrieves the instance's `_named` attribute, which stores its name.
+
+    Returns:
+        obj|str: A reference to the named attribute or the name of the attribute
+        if it is not found.
+
+    """
     return self._named
 
   def _make_rendering_contexts(self):
@@ -521,10 +550,27 @@ class Physics(_control.Physics):
 
   @property
   def model(self):
+    """
+    Returns the model attribute of the instance, which stores the data for the
+    physics simulation.
+
+    Returns:
+        object: The result of applying the data stored in the `_data` attribute
+        to a specific model.
+
+    """
     return self._data.model
 
   @property
   def data(self):
+    """
+    Returns a reference to the internal data attribute, allowing direct access and
+    manipulation of the data without affecting the object's state.
+
+    Returns:
+        object: A reference to the internal data storage of the class instance.
+
+    """
     return self._data
 
   def _physics_state_items(self):
