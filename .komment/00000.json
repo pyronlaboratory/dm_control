@@ -1,0 +1,167 @@
+[
+  {
+    "name": "engine.py",
+    "path": "dm_control/mujoco/engine.py",
+    "content": {
+      "structured": {
+        "description": "a 3D rendering engine using MuJoCo, a physics simulation library. It provides a high-level interface for rendering 3D scenes with cameras that can be moved and text overlays that can be drawn on top of the camera view. The code includes various classes such as Camera, MovableCamera, TextOverlay, and action_spec, which defines a BoundedArraySpec for MuJoCo actuators. The code also includes functions like select() and get_pose() in the Camera class, and draw() in the TextOverlay class. Overall, the code provides a powerful toolset for creating interactive 3D simulations with realistic physics and visualization capabilities.",
+        "items": [
+          {
+            "id": "42c881da-55c1-5d9e-f746-2f5e6914f124",
+            "ancestors": [
+              "91275d76-c98e-dea8-534e-f44f80145545"
+            ],
+            "description": "Creates an instance of the class and initializes a lock for managing contexts in parallel threads.",
+            "params": [
+              {
+                "name": "*args",
+                "type_name": "list",
+                "description": "List of positional arguments"
+              },
+              {
+                "name": "**kwargs",
+                "type_name": "dict",
+                "description": "Dictionary of keyword arguments"
+              }
+            ],
+            "returns": {
+              "type_name": "Object",
+              "description": "An instance of the `Physics` class with a number of pre-defined attributes and methods, including a lock object for synchronizing access to contexts."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from Physics import Physics\n\n# Create a new Physics instance\nphysics = Physics()\n\n# Use the instance\nphysics.enable_profiling()\n",
+              "description": ""
+            },
+            "name": "__new__",
+            "location": {
+              "start": 114,
+              "insert": 115,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "df55c9d7-22c6-d090-af43-aa9da2639d86",
+            "ancestors": [
+              "91275d76-c98e-dea8-534e-f44f80145545"
+            ],
+            "description": "Sets internal lock and reload data from given data when invoking.",
+            "params": [
+              {
+                "name": "data",
+                "type_name": "any",
+                "description": "Used to store the state of an object during serialization."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "data = wrapper.MjData()\nphysics = Physics(data)\nphysics._setstate_from_data(data)\n",
+              "description": "\nIn this example, the function `__setstate__` is called on the instance of the class `Physics`, which subclasses _control.Physics. The method takes in an argument named data and assigns it to a member variable named `_contexts`. The method also creates a lock object for thread safety and then returns the object."
+            },
+            "name": "__setstate__",
+            "location": {
+              "start": 339,
+              "insert": 342,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "47f086e3-d2c5-deba-e64e-19c3fe89476f",
+            "ancestors": [
+              "91275d76-c98e-dea8-534e-f44f80145545"
+            ],
+            "description": "Retrieves the instance's `_named` attribute, which stores its name.",
+            "params": [],
+            "returns": {
+              "type_name": "obj|str",
+              "description": "A reference to the named attribute or the name of the attribute if it is not found."
+            },
+            "usage": {
+              "language": "python",
+              "code": "import numpy as np\nfrom control.physics import Physics\n\n# create an instance of the Physics class\nphysics = Physics()\n\n# enable profiling for the physics object\nphysics.enable_profiling()\n\n# set a control function for the physics object\ndef my_control(data):\n    # do something with data\n    return np.array([0, 0])\nphysics.set_control(my_control)\n",
+              "description": ""
+            },
+            "name": "named",
+            "location": {
+              "start": 492,
+              "insert": 494,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "352a63e3-9c0e-678a-cc4d-a871e1c82ee8",
+            "ancestors": [
+              "91275d76-c98e-dea8-534e-f44f80145545"
+            ],
+            "description": "Returns the model attribute of the instance, which stores the data for the physics simulation.",
+            "params": [],
+            "returns": {
+              "type_name": "object",
+              "description": "The result of applying the data stored in the `_data` attribute to a specific model."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from physics import Physics\n\n# Create a new Physics instance\nphysics = Physics()\n\n# Use the model method to access the model of the physics instance\nmodel = physics.model\n\n# Do something with the model\nmodel.name = \"My Physics Model\"\n\n# Release the Python object and allow it to be garbage collected\ndel physics\n",
+              "description": ""
+            },
+            "name": "model",
+            "location": {
+              "start": 522,
+              "insert": 524,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "3e59ea86-1fc8-c2b3-1642-53ba7b1505b3",
+            "ancestors": [
+              "91275d76-c98e-dea8-534e-f44f80145545"
+            ],
+            "description": "Returns a reference to the internal data attribute, allowing direct access and manipulation of the data without affecting the object's state.",
+            "params": [],
+            "returns": {
+              "type_name": "object",
+              "description": "A reference to the internal data storage of the class instance."
+            },
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics(data)\nwith physics.suppress_physics_errors():\n  # do something here that may generate physics warnings\n  print(\"Doing something\")\nprint(\"Finished\")",
+              "description": ""
+            },
+            "name": "data",
+            "location": {
+              "start": 526,
+              "insert": 528,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          }
+        ]
+      }
+    }
+  }
+]
