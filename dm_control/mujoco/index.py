@@ -173,16 +173,6 @@ _COLUMN_ID_TO_FIELDS = {
 
 
 def _get_size_name_to_element_names(model):
-  """Returns a dict that maps size names to element names.
-
-  Args:
-    model: An instance of `mjbindings.mjModelWrapper`.
-
-  Returns:
-    A `dict` mapping from a size name (e.g. `'nbody'`) to a list of element
-    names.
-  """
-
   names = model.names[:model.nnames]
   size_name_to_element_names = {}
 
