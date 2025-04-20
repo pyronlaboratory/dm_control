@@ -1,0 +1,518 @@
+[
+  {
+    "name": "engine.py",
+    "path": "dm_control/mujoco/engine.py",
+    "content": {
+      "structured": {
+        "description": "A `Camera` class that renders 3D scenes using the MuJoCo physics engine and provides functionality for moving the camera and adding text overlays. It also defines a `MovableCamera` subclass that inherits from `Camera` and allows the user to move the camera using its `get_pose()` and `set_pose()` methods. Additionally, it provides an `action_spec()` function that returns a `BoundedArraySpec` matching the `physics` actuators, which is used in the `MovableCamera` class to specify the range of control inputs for the camera's actuators.",
+        "items": [
+          {
+            "id": "4484c0a8-081f-9098-564d-3b1dadc6c659",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Updates the simulation by calling the `mj_step` or `mj_step1` functions depending on the integrator option, and then checking for invalid states.",
+            "params": [],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "import numpy as np\nfrom physics import Physics\n\n# Setup the simulation environment\ndata = np.load(\"data.npy\")\nphysics = Physics(data)\n\n# Define the control signal to be applied to the simulation\ncontrol = [1, 2, 3]\nphysics.set_control(control)\n\n# Step forward in time one time step\nphysics.step()\n",
+              "description": ""
+            },
+            "name": "step",
+            "location": {
+              "start": 114,
+              "insert": 115,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 11,
+            "docLength": null
+          },
+          {
+            "id": "b0fb7dc6-1bbf-ab94-b94c-6e9759360f72",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Creates a new Camera instance, sets its height and width, and renders an image using the Physics scene. The rendered image is then returned.",
+            "params": [
+              {
+                "name": "height",
+                "type_name": "int",
+                "description": "240 by default, which sets the height of the output image."
+              },
+              {
+                "name": "width",
+                "type_name": "int",
+                "description": "320 by default, representing the width of the rendered image."
+              },
+              {
+                "name": "camera_id",
+                "type_name": "int",
+                "description": "Used to specify the id of the camera to be used for rendering."
+              },
+              {
+                "name": "overlays",
+                "type_name": "Union[str, List[float]]",
+                "description": "Used to specify additional render layers or images to be composited with the scene."
+              },
+              {
+                "name": "depth",
+                "type_name": "bool",
+                "description": "Used to toggle the rendering of depth information in the image."
+              },
+              {
+                "name": "scene_option",
+                "type_name": "SceneOption | NoneType",
+                "description": "Used to specify additional scene options for rendering, such as lighting or shadows."
+              }
+            ],
+            "returns": {
+              "type_name": "image",
+              "description": "A renderized view of a 3D scene."
+            },
+            "usage": {
+              "language": "python",
+              "code": "# Import the necessary library\nimport numpy as np\nfrom _control import Physics, Camera\n\n# Initialize a Physics object with some data\nphysics = Physics(data=np.array([[1], [2]]))\n\n# Use the render method to generate an image\nimage = physics.render(height=480, width=640)\n",
+              "description": ""
+            },
+            "name": "render",
+            "location": {
+              "start": 126,
+              "insert": 128,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 7,
+            "docLength": null
+          },
+          {
+            "id": "1ae43470-b15e-e295-8f46-1b091eb5a901",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Validates the input physics state's shape against the expected shape and then sets each item in the state to the corresponding value in the input state, starting from a specified index.",
+            "params": [
+              {
+                "name": "physics_state",
+                "type_name": "Tuple[int]",
+                "description": "Expected to have the same shape as the state items contained in the `_physics_state_items' method."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics(data)\nphysics.set_control([1, 2, 3]) # Set control values for the physics engine\n# Run simulation steps\nfor i in range(10):\n    physics.step()\n# Get state of the physics engine after 10 simulation steps\nstate = physics.get_state()\n",
+              "description": ""
+            },
+            "name": "set_state",
+            "location": {
+              "start": 138,
+              "insert": 139,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 13,
+            "docLength": null
+          },
+          {
+            "id": "6875d5ba-2dbe-bb84-ae48-04f861daf490",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Creates a copy of the original model, either by shallow or deep copying depending on the share_model argument. The new object is then reloaded with data from the copied model.",
+            "params": [
+              {
+                "name": "share_model",
+                "type_name": "bool",
+                "description": "Used to determine whether or not the model should be shared between the original instance and the copy."
+              }
+            ],
+            "returns": {
+              "type_name": "Object",
+              "description": "A newly created instance of the same class as the original object, with the same data as the original object."
+            },
+            "usage": {
+              "language": "python",
+              "code": "# create a new instance of the Physics class\nnew_physics = Physics(data)\n\n# copy data from existing physics object\nnew_physics.copy()\n",
+              "description": ""
+            },
+            "name": "copy",
+            "location": {
+              "start": 152,
+              "insert": 153,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 10,
+            "docLength": null
+          },
+          {
+            "id": "92e0066d-3a46-c587-504d-474d15636f67",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Reloads data from a model into the object's internal state, using the `MjData` wrapper to handle the data manipulation.",
+            "name": "_reload_from_model",
+            "location": {
+              "start": 204,
+              "insert": 205,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "838e60ae-166a-43a4-3e4b-e3fd3d211209",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Updates its data and rendering contexts based on the provided data, and then performs additional actions after resetting its internal state.",
+            "name": "_reload_from_data",
+            "location": {
+              "start": 208,
+              "insert": 209,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 12,
+            "docLength": null
+          },
+          {
+            "id": "5ff76f2c-15ef-da8f-f445-2564b8bf2124",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Frees any stored data and model resources, allowing for further manipulation or reuse.",
+            "params": [],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics(data)\n... # Some code that uses the physics object\n\n# Free memory allocated by the physics object\nphysics.free()\n\n# Code that continues to use the physics object will now fail with a RuntimeError\n",
+              "description": ""
+            },
+            "name": "free",
+            "location": {
+              "start": 223,
+              "insert": 224,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "638ed68d-3281-f694-bb41-288813c19bca",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Converts a given model into an instance of the MjData class, returning a new instance of the Physics class with the transformed data.",
+            "params": [
+              {
+                "name": "model",
+                "type_name": "object",
+                "description": "Passed the model data to be wrapped into a pandas DataFrame."
+              }
+            ],
+            "returns": {
+              "type_name": "ClassMethod[MjData,MjModel]",
+              "description": "A wrapper class that contains data from an instance of a model class."
+            },
+            "usage": {
+              "language": "python",
+              "code": "import numpy as np\nfrom mujoco import Physics, wrapper\n\n# Load a model and create a physics object\nmodel = wrapper.MjModel('path/to/model.xml')\nphysics = Physics.from_model(model)\n\n# Set the control and step forward in time\ncontrol = np.array([0.1, 0.2, 0.3])\nphysics.set_control(control)\nphysics.step()\n\n# Get the state of the system at the current time step\nstate = physics.get_state()\n",
+              "description": ""
+            },
+            "name": "from_model",
+            "location": {
+              "start": 227,
+              "insert": 229,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "classmethod",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "55f57e04-4b1a-42b8-3d42-b195f67725b6",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Converts an XML string into a `MjModel` object, which can then be converted into a `Physics` instance using the `from_model` method.",
+            "params": [
+              {
+                "name": "xml_string",
+                "type_name": "str | bytes",
+                "description": "A string representation of an XML document."
+              },
+              {
+                "name": "assets",
+                "type_name": "Union[dict, List[Any]]",
+                "description": "Used to pass additional asset data along with the XML string for the model's assets."
+              }
+            ],
+            "returns": {
+              "type_name": "Model",
+              "description": "Then converted to a value of type `cls` using the `from_model` method."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from mjpy.physics import Physics\n\n# Create a new instance of the Physics class using the from_xml_string method.\nphysics = Physics.from_xml_string('<mujoco>...</mujoco>')\n\n# Set the control to the physics object.\nphysics.set_control(np.array([0, 1]))\n\n# Take a step in the simulation using the physics object.\nphysics.step()\n\n# Render the scene from the perspective of the first camera using the physics object.\nrendered = physics.render()\n",
+              "description": "\nIn this example, the from_xml_string method is called on the Physics class to create a new instance of the Physics class using the XML string as input. The set_control method is then used to set the control of the simulation to an array with two values (0 and 1 in this case). Finally, the step method is used to take a single step in the simulation and render the scene from the perspective of the first camera using the rendered output."
+            },
+            "name": "from_xml_string",
+            "location": {
+              "start": 232,
+              "insert": 234,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "classmethod",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "15c23e93-479f-e1aa-b249-e2fdc60b8c5d",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Converts a byte string representing an MJ model into a Python object of the Physics class, which can be used for further manipulation or analysis.",
+            "params": [
+              {
+                "name": "byte_string",
+                "type_name": "bytes",
+                "description": "Used to represent a binary representation of a model."
+              }
+            ],
+            "returns": {
+              "type_name": "Model",
+              "description": "A wrapper around a model instance generated from a byte string."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from physics import Physics\n\n# Load a model from a file and create a Physics instance\nphysics = Physics.from_file('path/to/model')\n\n# Create a wrapper for the loaded model\nwrapper = physics._get_wrapper()\n\n# Use the wrapper to perform operations on the model\nwrapper.reset(physics)\n",
+              "description": ""
+            },
+            "name": "from_byte_string",
+            "location": {
+              "start": 237,
+              "insert": 239,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "classmethod",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "203bab9f-09d8-63a2-d14b-4ee195af52ac",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Converts an XML file path into a Python instance of the MjModel class, and then creates a new instance of the Physics class from that model.",
+            "params": [
+              {
+                "name": "file_path",
+                "type_name": "str",
+                "description": "The path to an XML file containing the model's configuration data."
+              }
+            ],
+            "returns": {
+              "type_name": "Model",
+              "description": "Obtained from a file path using the `MjModel.from_xml_path()` method, and then passed through the `cls.from_model()` method to create an instance of the wrapper class `wrapper.MjModel`."
+            },
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics.from_xml_path('model.xml')\n",
+              "description": "\nThis creates a new instance of the Physics class using the from_xml_path method, which takes the path to the XML file as its argument and returns a new Physics object initialized with the model specified in the file. The returned physics object can then be used to simulate the dynamics of the model, render images of the scene, or interact with the environment through user input."
+            },
+            "name": "from_xml_path",
+            "location": {
+              "start": 242,
+              "insert": 244,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "classmethod",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "a8b76540-e8e0-c3b8-c744-843cb5c614fc",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Converts a file path into an instance of the MjModel class, which can then be used to create an instance of the Physics class.",
+            "params": [
+              {
+                "name": "file_path",
+                "type_name": "str",
+                "description": "Used to specify the path to a binary file containing a trained machine learning model."
+              }
+            ],
+            "returns": {
+              "type_name": "Model",
+              "description": "A subclass of MjModel."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from control.physics import Physics\n\n# Load the physics class from a binary file\nphysics = Physics.from_binary_path(\"path/to/model.mjb\")\n\n# Perform some operations with the physics instance\nphysics.set_control(np.array([1, 2, 3]))\nphysics.step()\nimage = physics.render()\n\n# Save the physics instance to a binary file\nphysics.save(\"path/to/saved_model.mjb\")\n",
+              "description": ""
+            },
+            "name": "from_binary_path",
+            "location": {
+              "start": 247,
+              "insert": 249,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "classmethod",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "ad525e3c-bab4-baa4-5b42-93b476adab78",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Reloads model data from an XML string and updates the object's state accordingly.",
+            "params": [
+              {
+                "name": "xml_string",
+                "type_name": "str",
+                "description": "An XML string representation of a model to be reloaded."
+              },
+              {
+                "name": "assets",
+                "type_name": "Union[Dict[str, Any], List[Any]]",
+                "description": "Optional, used to provide additional data that can be used when loading the model from the XML string."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics()\nmodel = physics.model\nassets = model.get_assets()\n\n# load a new model from a string\nnew_model = wrapper.MjModel.from_xml_string(xml_string, assets)\nphysics.reload_from_xml_string(new_model)\n",
+              "description": ""
+            },
+            "name": "reload_from_xml_string",
+            "location": {
+              "start": 252,
+              "insert": 253,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "5cd843d3-c838-a5bc-f444-318efdc8bd50",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Sets the `_named` attribute to the instance itself, effectively returning the instance.",
+            "params": [],
+            "returns": {
+              "type_name": "object",
+              "description": "A reference to its underlying attribute."
+            },
+            "usage": {
+              "language": "python",
+              "code": "physics = Physics(data)\nimage = physics.render()\n",
+              "description": "\nThis code creates an instance of the class Physics and uses its render method to create a visual representation of the simulation state using the default camera and overlay settings."
+            },
+            "name": "named",
+            "location": {
+              "start": 259,
+              "insert": 261,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "f3f7a781-1a4f-159a-5142-f56b615021a9",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Returns the model attribute of the instance, which stores the data required for physics simulations.",
+            "params": [],
+            "returns": {
+              "type_name": "Model",
+              "description": "A reference to the model associated with the instance of the class."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from mjcf import Physics\n\n# Create a new Physics object and set up the simulation\nphysics = Physics(data)\nphysics.set_control([0, 1])\n\n# Run the simulation for a few steps\nfor i in range(10):\n    physics.step()\n\n# Get the current state of the simulation\nstate = physics.get_state()\n",
+              "description": ""
+            },
+            "name": "model",
+            "location": {
+              "start": 286,
+              "insert": 288,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "9a6b5ba6-96b0-78b6-5940-810c622cb6ce",
+            "ancestors": [
+              "744385ed-8bdb-0b86-d24b-a875d61d835c"
+            ],
+            "description": "Returns a reference to the internal data storage of the object, allowing direct access and manipulation of the data without affecting the object's state.",
+            "params": [],
+            "returns": {
+              "type_name": "object",
+              "description": "A reference to the instance variable `_data`."
+            },
+            "usage": {
+              "language": "python",
+              "code": "from mujoco_py.builder import build as mjb\nimport numpy as np\n\n# Initialize a Physics object with some simulation data\nphysics = mjb.Physics(mjb.load_model(\"path/to/model\"))\n\n# Get the data attribute of the Physics object\ndata = physics.data\n\n# Access the data as an array using indexing\ndata[0] = 1.0\n\n# Access the data as a slice\ndata[:3] = np.array([2.0, 3.0, 4.0])\n\n# Access the data as a matrix\ndata[:3, :3] = np.array([[5.0, 6.0, 7.0], [8.0, 9.0, 10.0]])\n",
+              "description": ""
+            },
+            "name": "data",
+            "location": {
+              "start": 290,
+              "insert": 292,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "method",
+            "length": 3,
+            "docLength": null
+          }
+        ]
+      }
+    }
+  }
+]
